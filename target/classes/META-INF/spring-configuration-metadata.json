@@ -1,0 +1,11 @@
+{
+  "groups": [
+    {
+      "name": "properties",
+      "type": "com.oracle.springboot.bean.Properties",
+      "sourceType": "com.oracle.springboot.bean.Properties"
+    }
+  ],
+  "properties": [],
+  "hints": []
+}
