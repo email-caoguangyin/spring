@@ -1,8 +1,8 @@
 package com.oracle.springboot.provider;
 
 import com.alibaba.fastjson.JSON;
-import com.oracle.springboot.pojo.AccessTokenPojo;
-import com.oracle.springboot.pojo.GithubUser;
+import com.oracle.springboot.bean.AccessTokenPojo;
+import com.oracle.springboot.bean.GithubUser;
 import okhttp3.*;
 import org.springframework.stereotype.Component;
 

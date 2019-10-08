@@ -1,10 +1,12 @@
 package com.oracle.springboot;
 
-import com.oracle.springboot.bean.Properties;
+
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
+@MapperScan(basePackages = "com.oracle.springboot.dao")
 public class SpringbootApplication {
 
     public static void main(String[] args) {
