@@ -2,6 +2,7 @@ package com.oracle.springboot.service.serviceImpl;
 
 import com.oracle.springboot.bean.NotificationModel;
 import com.oracle.springboot.bean.QuestionPage;
+import com.oracle.springboot.bean.QuestionQueryDto;
 import com.oracle.springboot.dao.NotificationMapper;
 import com.oracle.springboot.dao.UserMapper;
 import com.oracle.springboot.enums.NotificationStatusEnum;
@@ -33,6 +34,13 @@ public class NotificationServiceImpl implements NotificationService {
      */
     @Override
     public QuestionPage getNotificationPageByUser(Long userId, Integer size, Integer page) {
+
+        NotificationExample notificationExampleVO = new NotificationExample();
+        notificationExampleVO.createCriteria().andJieshouEqualTo(userId);
+        List<Notification> notificationList = notificationMapper.selectByExample(notificationExampleVO);
+        if (notificationList.size()==0){
+            return new QuestionPage();
+        }
         QuestionPage<NotificationModel> questionPage=new QuestionPage<NotificationModel>();
 
         NotificationExample notificationExample=new NotificationExample();
@@ -47,22 +55,31 @@ public class NotificationServiceImpl implements NotificationService {
         }
 
         Integer offset=size * (page - 1);
-        List<Notification> list=notificationMapper.PageListByUser(userId,offset,size);
 
 
-        if (list.size()==0){
+            List<Notification> list = notificationMapper.PageListByUser(userId, offset, size);
+
+
+            if (list.size() == 0) {
+                return questionPage;
+            }
+            List<NotificationModel> notificationModelList = new ArrayList<NotificationModel>();
+            for (Notification notification : list) {
+                NotificationModel notificationModel = new NotificationModel();
+                BeanUtils.copyProperties(notification, notificationModel);
+                notificationModel.setTypeName(NotificationTypeEnum.nameOfType(notification.getType()));
+                notificationModel.setOuterTitle(notification.getQuestiontitle());
+                String  questiontitle=notification.getQuestiontitle();
+                if (questiontitle.length()>10){
+                    questiontitle=questiontitle.substring(0,10)+"……";
+                }
+                notificationModel.setOuterTitle(questiontitle);
+                notificationModelList.add(notificationModel);
+
+            }
+            questionPage.setData(notificationModelList);
             return questionPage;
-        }
-        List<NotificationModel> notificationModelList=new ArrayList<NotificationModel>();
-        for (Notification notification: list) {
-            NotificationModel notificationModel = new NotificationModel();
-            BeanUtils.copyProperties(notification,notificationModel);
-            notificationModel.setTypeName(NotificationTypeEnum.nameOfType(notification.getType()));
-            notificationModel.setOuterTitle(notification.getQuestiontitle());
-            notificationModelList.add(notificationModel);
-        }
-        questionPage.setData(notificationModelList);
-        return questionPage;
+
     }
 
     /** 未读的条数
@@ -104,5 +121,11 @@ public class NotificationServiceImpl implements NotificationService {
         BeanUtils.copyProperties(notification,notificationModel);
         notificationModel.setTypeName(NotificationTypeEnum.nameOfType(notification.getType()));
         return notificationModel;
+    }
+
+    @Override
+    public List<Notification> selectDoomsd(QuestionQueryDto questionQueryDto) {
+        List<Notification> notificationList= notificationMapper.selectDoomsd(questionQueryDto);
+        return notificationList;
     }
 }

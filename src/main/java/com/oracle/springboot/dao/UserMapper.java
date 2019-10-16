@@ -3,6 +3,8 @@ package com.oracle.springboot.dao;
 import com.oracle.springboot.pojo.User;
 import com.oracle.springboot.pojo.UserExample;
 import java.util.List;
+
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Update;
 import org.springframework.stereotype.Repository;
@@ -99,4 +101,5 @@ public interface UserMapper {
 
     @Update("UPDATE  `user` SET name=#{name},image=#{image},dianzan=#{dianzan},token=#{token} where loginname=#{loginname}")
     void updateUser(User userPo);
+
 }

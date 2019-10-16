@@ -92,13 +92,13 @@
       '3 + 3 = 6');
 
   MT('image',
-      'An image: [string !http://www.example.com/image.png!]');
+      'An avatar_url: [string !http://www.example.com/image.png!]');
 
   MT('imageWithAltText',
-      'An image: [string !http://www.example.com/image.png (Alt Text)!]');
+      'An avatar_url: [string !http://www.example.com/image.png (Alt Text)!]');
 
   MT('imageWithUrl',
-      'An image: [string !http://www.example.com/image.png!:http://www.example.com/]');
+      'An avatar_url: [string !http://www.example.com/image.png!:http://www.example.com/]');
 
   /*
    * Headers

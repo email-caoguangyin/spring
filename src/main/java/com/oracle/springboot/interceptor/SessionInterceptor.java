@@ -27,7 +27,7 @@ public class SessionInterceptor implements HandlerInterceptor {
                 if(cookie.getName().equals("token")){
                     String token=cookie.getValue();
                     List<User> user=userService.getUserByToken(token);
-                    if(user.get(0) !=null){
+                    if(user.size() !=0){
                         request.getSession().setAttribute("user",user.get(0));
                         //通知数
                         Integer unreadCount = notificationService.unread(user.get(0));

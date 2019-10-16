@@ -25,10 +25,10 @@ public class CustomizeErrorController implements ErrorController{
     public ModelAndView errorHtml(HttpServletRequest request, Model model){
         HttpStatus status=getStatus(request);
         if (status.is4xxClientError()){
-            model.addAttribute("message","你的请求出错，换个方式试试！");
+            model.addAttribute("message","你的请求出错，换个方式试试！手写404");
         }
         if (status.is5xxServerError()){
-            model.addAttribute("message","服务器冒烟了，请你稍后再试！");
+            model.addAttribute("message","服务器冒烟了，请你稍后再试！手写500");
         }
         return new ModelAndView("error");
     }

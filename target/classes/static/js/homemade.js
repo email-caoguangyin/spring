@@ -137,24 +137,7 @@ function pinglun(e) {
         }
     }
 }
-/**
-    <div class="col-lg-12 col-sm-12 col-xs-12 col-md-12">
-        <div class="media-left media-middle">
-            <a href="#">
-             <img class="img-rounded" src="https://avatars2.githubusercontent.com/u/54128358?s=460&v=4"style="width: 50px">
-            </a>
-        </div>
-        <div class="media-body" style="padding: 15px" th:id="${'comment-boby-'+comment.id}">
-             <h5><span th:text="${comment.user.name}"></span>&nbsp;&nbsp; &nbsp;</h5>
-             <div><span th:text="${comment.content}"></span></div>
-             <div style="color: #999;margin-top: 5px">
-                <span class="pull-right" th:text="${#dates.format(comment.createdate,'yyyy-MM-dd')}" ></span>
-             </div>
-         </div>
-    </div>
 
-
-*/
 
 /** 点赞按钮
  *
@@ -162,13 +145,14 @@ function pinglun(e) {
 
 function dianzan(e) {
     var id = e.getAttribute("data-id2");
-
+    var type =2;
     $.ajax({
         type: 'POST',
-        url: "/dianzan",
+        url: "/like",
         contentType: "application/json",
         data: JSON.stringify({
             "id": id,
+            "type":type,
         }),
         success: function (response) {
             if (response.code == 200) {
@@ -203,4 +187,89 @@ function selectTag(e) {
 function showSelectTag() {
     $("#select-tag").show();
 
+}
+
+
+function likes(e) {
+    var id = e.getAttribute("data-qusetionId");
+    var type=1;
+    $.ajax({
+        type: 'POST',
+        url: "/like",
+        contentType: "application/json",
+        data: JSON.stringify({
+            "id": id,
+            "type":type,
+        }),
+        success: function (response) {
+            if (response.code == 200) {
+                window.location.reload();
+            } else if (response.code == 2003) {
+                var isAccepted = confirm(response.message)
+                if (isAccepted) {
+                    window.open("https://github.com/login/oauth/authorize?client_id=Iv1.a5ad1e39f7775a75&redirect_uri=http://localhost:8080/callback&scope=user&state=1")
+                    window.localStorage.setItem("closable", true);
+                }
+            } else {
+                alert(response.message)
+            }
+        },
+        dataType: 'json'
+    });
+
+}
+
+/* 删除按钮*/
+function deleteQuestion(e) {
+    var id = e.getAttribute("data-questionId");
+    $.ajax({
+        type: 'POST',
+        url: "/update",
+        contentType: "application/json",
+        data: JSON.stringify({
+            "id": id,
+            "status":0,
+        }),
+        success: function (response) {
+            if (response.code == 200) {
+                window.location.reload();
+            } else if (response.code == 2003) {
+                var isAccepted = confirm(response.message)
+                if (isAccepted) {
+                    window.open("https://github.com/login/oauth/authorize?client_id=Iv1.a5ad1e39f7775a75&redirect_uri=http://localhost:8080/callback&scope=user&state=1")
+                    window.localStorage.setItem("closable", true);
+                }
+            } else {
+                alert(response.message)
+            }
+        },
+        dataType: 'json'
+    });
+}
+/*还原按钮*/
+function restoreQuestion(e) {
+    var id = e.getAttribute("data-restoreId");
+    $.ajax({
+        type: 'POST',
+        url: "/update",
+        contentType: "application/json",
+        data: JSON.stringify({
+            "id": id,
+            "status":1,
+        }),
+        success: function (response) {
+            if (response.code == 200) {
+                window.location.reload();
+            } else if (response.code == 2003) {
+                var isAccepted = confirm(response.message)
+                if (isAccepted) {
+                    window.open("https://github.com/login/oauth/authorize?client_id=Iv1.a5ad1e39f7775a75&redirect_uri=http://localhost:8080/callback&scope=user&state=1")
+                    window.localStorage.setItem("closable", true);
+                }
+            } else {
+                alert(response.message)
+            }
+        },
+        dataType: 'json'
+    });
 }

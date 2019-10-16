@@ -4,17 +4,20 @@ package com.oracle.springboot.service.serviceImpl;
 
 import com.oracle.springboot.bean.QuestionPage;
 import com.oracle.springboot.bean.QuestionModel;
+import com.oracle.springboot.bean.QuestionQueryDto;
 import com.oracle.springboot.dao.QuestionMapper;
 import com.oracle.springboot.dao.UserMapper;
+import com.oracle.springboot.enums.QuestionStatusEnum;
 import com.oracle.springboot.pojo.Question;
 import com.oracle.springboot.pojo.QuestionExample;
 import com.oracle.springboot.pojo.User;
 import com.oracle.springboot.pojo.UserExample;
 import com.oracle.springboot.service.QuestionService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.apache.commons.lang3.StringUtils;
+
 
 
 import java.util.ArrayList;
@@ -88,10 +91,23 @@ public class QuestionServiceImpl implements QuestionService {
      */
 
     @Override
-    public QuestionPage getQuestionPage(Integer page, Integer size) {
+    public QuestionPage getQuestionPage(Integer page, Integer size,String search) {
+
         QuestionPage questionPage=new QuestionPage();
-        Integer totalCount=questionMapper.count();
-        //Integer totalCount=questionEssMapper.count();
+        QuestionQueryDto questionQueryDtos=new QuestionQueryDto();
+
+        if (StringUtils.isNotBlank(search)) {
+            String[] tags = StringUtils.split(search, " ");
+            search = Arrays
+                    .stream(tags)
+                    .filter(StringUtils::isNotBlank)
+                    .map(t -> t.replace("+", "").replace("*", "").replace("?", ""))
+                    .filter(StringUtils::isNotBlank)
+                    .collect(Collectors.joining("|"));
+        }
+
+        questionQueryDtos.setSearch(search);
+        Integer totalCount=questionMapper.countBySearch(questionQueryDtos);
         questionPage.setPagination(totalCount,page,size);
         if (page < 1){
             page = 1;
@@ -101,8 +117,20 @@ public class QuestionServiceImpl implements QuestionService {
         }
 
         Integer offset=size * (page - 1);
-        List<Question> list=questionMapper.PageList(offset,size);
-        //List<Question> list=questionEssMapper.PageList(offset,size);
+
+        QuestionExample questionExample = new QuestionExample();
+        questionExample.createCriteria().andStatusEqualTo(QuestionStatusEnum.QUESTION_EXIST.getType());
+        List<Question> questionList =questionMapper.selectByExample(questionExample);
+        if (questionList.size()==0){
+            return new QuestionPage();
+        }
+
+         QuestionQueryDto questionQueryDto=new QuestionQueryDto();
+            questionQueryDto.setSize(size);
+            questionQueryDto.setPage(offset);
+            questionQueryDto.setSearch(search);
+        List<Question> list=questionMapper.selectBySearch(questionQueryDto);
+
 
         List<QuestionModel> questionModelList=new ArrayList<QuestionModel>();
         for (Question question:list){
@@ -117,16 +145,23 @@ public class QuestionServiceImpl implements QuestionService {
             questionModel.setName(userList.get(0).getName());
 
             String descriptionStr=questionModel.getDescription();
+            //限制内容的长度
             if (descriptionStr.length()>100){
                 descriptionStr=descriptionStr.substring(0,100)+"……";
             }
             questionModel.setDescription(descriptionStr);
-
+            //限制标题的长度
+            String title=questionModel.getTitle();
+            if (title.length()>10){
+                title=title.substring(0,10)+"……";
+            }
+            questionModel.setTitle(title);
             questionModelList.add(questionModel);
 
         }
         questionPage.setData(questionModelList);
         return questionPage;
+
     }
 
     /** 分页显示自己的问题
@@ -138,9 +173,17 @@ public class QuestionServiceImpl implements QuestionService {
      */
 
     @Override
-    public  QuestionPage getQuestionPageByUser(Long userId, Integer size, Integer page) {
+    public  QuestionPage getQuestionPageByUser(Long userId, Integer size, Integer page,Integer status) {
+        //判断是否为空
+        QuestionExample questionExample=new QuestionExample();
+        questionExample.createCriteria().andCreateuserEqualTo(userId).andStatusEqualTo(status);
+        List<Question> questionList= questionMapper.selectByExample(questionExample);
+        if (questionList.size()==0){
+            QuestionPage questionPage=new QuestionPage();
+            return questionPage;
+        }
         QuestionPage questionPage=new QuestionPage();
-        Integer totalCount=questionMapper.countByUser(userId);
+        Integer totalCount=questionMapper.countByUser(userId,status);
         //Integer totalCount=questionEssMapper.countByUser(userId);
         questionPage.setPagination(totalCount,page,size);
         if (page < 1){
@@ -151,8 +194,7 @@ public class QuestionServiceImpl implements QuestionService {
         }
 
         Integer offset=size * (page - 1);
-        List<Question> list=questionMapper.PageListByUser(userId,offset,size);
-        //List<Question> list=questionEssMapper.PageListByUser(userId,offset,size);
+        List<Question> list=questionMapper.PageListByUser(userId,offset,size,status);
 
         List<QuestionModel> questionModelList=new ArrayList<QuestionModel>();
         for (Question question:list){
@@ -164,12 +206,25 @@ public class QuestionServiceImpl implements QuestionService {
             BeanUtils.copyProperties(question,questionModel);
             questionModel.setUser(userList.get(0));
             questionModel.setName(userList.get(0).getName());
+
+            String title=question.getTitle();
+            if (title.length()>10){
+                title=title.substring(0,10)+"……";
+            }
+            questionModel.setTitle(title);
+            String description=question.getDescription();
+            if (description.length()>100){
+                description=description.substring(0,100)+"……";
+            }
+            questionModel.setDescription(description);
             questionModelList.add(questionModel);
 
         }
         questionPage.setData(questionModelList);
         return questionPage;
     }
+
+
 
     /** 查看自己的问题个数
      *
@@ -178,8 +233,8 @@ public class QuestionServiceImpl implements QuestionService {
      */
 
     @Override
-    public Integer getCountByUser(Long id) {
-        return questionMapper.countByUser(id);
+    public Integer getCountByUser(Long id,Integer status) {
+        return questionMapper.countByUser(id,status);
 
     }
 
@@ -238,6 +293,18 @@ public class QuestionServiceImpl implements QuestionService {
         }).collect(Collectors.toList());
 
 
+
         return questionModels;
+    }
+
+    @Override
+    public void dianzan(Long id) {
+        questionMapper.dianzan(id);
+    }
+
+    @Override
+    public void update(Long id,Integer status) {
+
+        questionMapper.update(id,status);
     }
 }

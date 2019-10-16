@@ -2,6 +2,7 @@ package com.oracle.springboot.contorller;
 
 import com.oracle.springboot.bean.CommentModel2;
 import com.oracle.springboot.cache.TagCache;
+import com.oracle.springboot.enums.QuestionStatusEnum;
 import com.oracle.springboot.exception.CustomizeErrorCode;
 import com.oracle.springboot.exception.CustomizeException;
 import com.oracle.springboot.bean.QuestionModel;
@@ -63,6 +64,7 @@ public class PublishController {
         question.setPinglun(0);
         question.setYuedu(0);
         question.setCreateuser(user.getId());
+        question.setStatus(QuestionStatusEnum.QUESTION_EXIST.getType());
         questionService.addQuestion(question);
 
         return "redirect:/";
@@ -85,7 +87,9 @@ public class PublishController {
         List<CommentModel2> commentList=commentService.getCommentByParentId(id);
         model.addAttribute("comment" ,commentList);
         model.addAttribute("question",questionModel);
+        //相关问题
         model.addAttribute("questionModelList",questionModelList);
+
         model.addAttribute("tags", TagCache.get());
         return "question";
     }

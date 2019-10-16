@@ -3105,7 +3105,7 @@
         },
 
         image : function() {
-            this.executePlugin("imageDialog", "image-dialog/image-dialog");
+            this.executePlugin("imageDialog", "avatar_url-dialog/avatar_url-dialog");
         },
         
         code : function() {

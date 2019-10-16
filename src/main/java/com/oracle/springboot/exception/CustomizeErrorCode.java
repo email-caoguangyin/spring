@@ -10,7 +10,10 @@ public enum CustomizeErrorCode implements ICustomizeErrorCode {
     COMMENT_NOT_FOUND(2006,"你所查找的评论不存在，你换个问题试试?"),
     COMMENT_IS_EMPTY(2007,"输入内容不能为空！"),
     READ_NOTIFICATION_FAIL(2008,"不能读取他人信息！"),
-    NOTIFICATION_NOT_FOUND(2009,"消息不翼而飞了！")
+    NOTIFICATION_NOT_FOUND(2009,"消息不翼而飞了！"),
+    REPEAT_THE_THUMB_UP(2010,"重复点赞！"),
+    DOOMSDAY(2012,"你完蛋了！"),
+    NULL(2011,"空空如也！"),
     ;
 
 

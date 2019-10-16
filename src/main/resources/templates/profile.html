@@ -6,51 +6,52 @@
     <link rel="stylesheet" href="/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="/css/bootstrap-theme.min.css">
     <script src="/js/jquery-3.4.1.min.js" type="application/javascript"></script>
+    <script src="/js/homemade.js" type="application/javascript"></script>
     <script src="/js/bootstrap.min.js" type="application/javascript"></script>
 </head>
 
 <body style="background-color: #efefef">
     <div th:insert="navigation :: navigation"></div>
-        <div style="margin: 0px 60px 30px 60px;height: 1200px;background-color:white;">
+        <div style="margin: 30px 30px 30px 30px ;height: 1200px;background-color:white;">
 
             <div class="col-lg-9 col-sm-12 col-xs-12 col-md-12" style=" height: 1200px;">
                 <h2 style="margin: 10px"><span th:text="${sectionName}"></span></h2>
                 <hr>
-                <!-- 内容-->
+                <!-- 我的问题-->
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" th:if="${section == 'question'}">
-                <tr th:each="question:${pagination.data}">
-                    <div  style="margin: 20px">
-                        <!--图片-->
-                        <div class="media-left media-middle">
-                            <a href="#">
-                                <img class="media-object" src="https://avatars2.githubusercontent.com/u/54128358?s=460&v=4"
-                                     style="width: 50px">
-                            </a>
-                        </div>
-                        <!--内容-->
-                        <div class="media-body">
-                            <h4 class="media-heading">
-                                <a th:href="@{'/question/'+ ${question.id}}" th:text="${question.title}"></a>
-                            </h4>
-                            <p><span span class="glyphicon glyphicon-user" aria-hidden="true"></span>
-                                <a href="">发布人：
-                                    <span th:text="${question.name}"></span>
+
+                     <tr th:each="question:${pagination.data}">
+                          <div  style="margin: 20px">
+                              <!--图片-->
+                            <div class="media-left media-middle">
+                                <a href="#">
+                                    <img class="media-object" th:src="${question.user.image}"
+                                         style="width: 50px">
                                 </a>
-                            </p>
-                            <p>
-                                <span span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span>
-                                <a href="">点赞数：<span th:text="${question.dianzan}"></span></a>
-                            </p>
-                            <p style="color: #547abd;">
-                                <span span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
-                                <a href="">评论数：<span th:text="${question.pinglun}"></span>
-                                </a>
-                                &nbsp;&nbsp;&nbsp;&nbsp;<span span class="glyphicon glyphicon-time" aria-hidden="true"></span>  创建时间：<span th:text="${#dates.format(question.createdate,'yyyy MM dd')}"></span>
-                                &nbsp;&nbsp;&nbsp;  <span span class="glyphicon glyphicon-tag" aria-hidden="true"></span>  类型：<span th:text="${question.tag}"></span>
-                            </p>
+                            </div>
+                            <!--内容-->
+                            <div class="media-body">
+                                <h4 class="media-heading">
+                                    <a th:href="@{'/question/'+ ${question.id}}" th:text="${question.title}"></a>
+                                </h4>
+                                <p style="font-size: 12px">
+                                    <span th:text="${question.description}" class="description"></span>
+                                </p>
+                                <!-- <p style="color: #547abd;">
+                                     <span span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span>
+                                     <a href="">点赞数：<span th:text="${question.dianzan}"></span></a>&nbsp;&nbsp;&nbsp;&nbsp;
+                                     <span span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span></span>  阅读数：<span th:text="${question.yuedu}"></span>
+                                 </p>-->
+                                <p style="color: #8c8c8c;font-size: 12px">
+                                    <span span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+                                    评论数：<span th:text="${question.pinglun}"></span>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;<span span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span></span>  阅读数：<span th:text="${question.yuedu}"></span>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;<span span class="glyphicon glyphicon-time" aria-hidden="true"></span>  创建时间：<span th:text="${#dates.format(question.createdate,'yyyy MM dd')}"></span>
+                                            <span class="glyphicon glyphicon-trash" style="cursor:pointer;margin-right: 16px;font-size: 14px;float: right" th:data-questionId="${question.id}" onclick="deleteQuestion(this)"></span>
+                                </p>
+                            </div>
                         </div>
-                    </div>
-                </tr>
+                    </tr>
                 </div>
                 <!--最新回复-->
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" th:if="${section == 'replies'}">
@@ -66,7 +67,56 @@
                         </div>
                     </div>
                 </div>
+                <!--点赞问题-->
+                <div  class="col-lg-12 col-md-12 col-sm-12 col-xs-12" th:if="${section == 'likes'}">
+                    <div class="media" th:each="likes : ${pagination.data}">
+                        <div class="media-body">
+                            <p class="media-heading">
 
+                                <span th:text="${#dates.format(likes.createdate,'yyyy-MM-dd') +' ' + likes.outerTitle + ' '}"></span>
+                                <a th:href="@{'/likes/'+ ${likes.id}}"
+                                   th:text="${likes.title}">
+                                </a>
+                                <!--<span class="label label-danger" th:if="${notification.status == 0}">未读</span>-->
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <!-- 黑名单-->
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" th:if="${section == 'hate'}">
+                    <tr th:each="question:${pagination.data}">
+                        <div  style="margin: 20px">
+                            <!--图片-->
+                            <div class="media-left media-middle">
+                                <a href="#">
+                                    <img class="media-object" th:src="${question.user.image}"
+                                         style="width: 50px">
+                                </a>
+                            </div>
+                            <!--内容-->
+                            <div class="media-body">
+                                <h4 class="media-heading">
+                                    <a th:href="@{'/question/'+ ${question.id}}" th:text="${question.title}"></a>
+                                </h4>
+                                <p style="font-size: 12px">
+                                    <span th:text="${question.description}" class="description"></span>
+                                </p>
+                                <!-- <p style="color: #547abd;">
+                                     <span span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span>
+                                     <a href="">点赞数：<span th:text="${question.dianzan}"></span></a>&nbsp;&nbsp;&nbsp;&nbsp;
+                                     <span span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span></span>  阅读数：<span th:text="${question.yuedu}"></span>
+                                 </p>-->
+                                <p style="color: #8c8c8c;font-size: 12px">
+                                    <span span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+                                    评论数：<span th:text="${question.pinglun}"></span>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;<span span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span></span>  阅读数：<span th:text="${question.yuedu}"></span>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;<span span class="glyphicon glyphicon-time" aria-hidden="true"></span>  创建时间：<span th:text="${#dates.format(question.createdate,'yyyy MM dd')}"></span>
+                                            <span class="glyphicon glyphicon-plus" style="cursor:pointer;margin-right: 16px;font-size: 14px;float: right" th:data-restoreId="${question.id}" onclick="restoreQuestion(this)">还原</span>
+                                </p>
+                            </div>
+                        </div>
+                    </tr>
+                </div>
                 <!--分页-->
                 <div class="col-lg-3 col-md-12 col-sm-12 col-xs-12" style="margin: 0px 0px 0px 20px ;" >
                     <nav aria-label="Page navigation" style="float: left ;width: 400px" >
@@ -98,10 +148,10 @@
                     </ul>
                 </nav>
                 </div>
-            </div>
+                </div>
 
-            <!--右侧导航-->
-            <div class="col-lg-3 col-sm-12 col-xs-12 col-md-12" style="height: 100% ;background-color: #a6e1ec ">
+                <!--右侧导航-->
+                <div class="col-lg-3 col-sm-12 col-xs-12 col-md-12" style="height: 100% ;background-color: #a6e1ec ">
                 <div class="list-group" style="margin-top: 15px;">
                     <a href="/profile/question" class="list-group-item" th:classappend="${section == 'question'}? 'active' : ''">
                         我的问题  <span class="badge" th:text="${questionCount}"></span>
@@ -109,16 +159,17 @@
                     <a href="/profile/replies" class="list-group-item" th:classappend="${section == 'repies'}? 'active' : ''">
                         最新回复  <span class="badge" th:text="${unreadCount}" ></span>
                     </a>
-                    <a href="#" class="list-group-item" th:classappend="${section == 'repies'}? 'active' : ''">
-                        点赞问题  <span class="badge">14</span>
+                    <a href="/profile/likes" class="list-group-item" th:classappend="${section == 'likes'}? 'active' : ''">
+                        我的点赞  <span class="badge" th:text="${likesCount}" ></span>
                     </a>
-                    <a href="#" class="list-group-item" th:classappend="${section == 'repies'}? 'active' : ''">
-                        收藏问题  <span class="badge">14</span>
+                    <a href="/profile/hate" class="list-group-item" th:classappend="${section == 'hate'}? 'active' : ''">
+                        黑名单  <span class="badge" th:text="${hateCount}" ></span>
                     </a>
                 </div>
-            </div>
-
+                </div>
         </div>
     </div>
+
+    <div th:insert="footer :: footer"></div>
 </body>
 </html>

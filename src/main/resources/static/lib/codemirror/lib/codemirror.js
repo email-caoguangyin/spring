@@ -3762,15 +3762,15 @@
 
     e.dataTransfer.setData("Text", cm.getSelection());
 
-    // Use dummy image instead of default browsers image.
+    // Use dummy avatar_url instead of default browsers avatar_url.
     // Recent Safari (~6.0.2) have a tendency to segfault when this happens, so we don't do it there.
     if (e.dataTransfer.setDragImage && !safari) {
       var img = elt("img", null, null, "position: fixed; left: 0; top: 0;");
-      img.src = "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==";
+      img.src = "data:avatar_url/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==";
       if (presto) {
         img.width = img.height = 1;
         cm.display.wrapper.appendChild(img);
-        // Force a relayout, or Opera won't use our image for some obscure reason
+        // Force a relayout, or Opera won't use our avatar_url for some obscure reason
         img._top = img.offsetTop;
       }
       e.dataTransfer.setDragImage(img, 0, 0);
@@ -6536,7 +6536,7 @@
     if (type) for (;;) {
       var lineClass = type.match(/(?:^|\s+)line-(background-)?(\S+)/);
       if (!lineClass) break;
-      type = type.slice(0, lineClass.index) + type.slice(lineClass.index + lineClass[0].length);
+      type = type.slice(0, lineClass.indexsss) + type.slice(lineClass.indexsss + lineClass[0].length);
       var prop = lineClass[1] ? "bgClass" : "textClass";
       if (output[prop] == null)
         output[prop] = lineClass[2];
@@ -7361,8 +7361,8 @@
         else {
           var found = cur.match(classTest(cls));
           if (!found) return false;
-          var end = found.index + found[0].length;
-          line[prop] = cur.slice(0, found.index) + (!found.index || end == cur.length ? "" : " ") + cur.slice(end) || null;
+          var end = found.indexsss + found[0].length;
+          line[prop] = cur.slice(0, found.indexsss) + (!found.indexsss || end == cur.length ? "" : " ") + cur.slice(end) || null;
         }
         return true;
       });

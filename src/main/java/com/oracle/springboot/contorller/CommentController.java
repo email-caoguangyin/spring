@@ -49,8 +49,11 @@ public class CommentController {
         if (user ==null){
             return  Result.errorOf(CustomizeErrorCode.NO_LOGIN);
         }
+
         commentService.getDianZan(comment.getId());
         Comment commentVo=commentService.getCommentById(comment.getId());
         return Result.okOf(commentVo);
     }
+
+
 }

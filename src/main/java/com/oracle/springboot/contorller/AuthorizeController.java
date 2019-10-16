@@ -2,6 +2,8 @@ package com.oracle.springboot.contorller;
 
 import com.oracle.springboot.bean.AccessTokenPojo;
 import com.oracle.springboot.bean.GithubUser;
+import com.oracle.springboot.exception.CustomizeErrorCode;
+import com.oracle.springboot.exception.CustomizeException;
 import com.oracle.springboot.pojo.User;
 import com.oracle.springboot.provider.GithubProvider;
 import com.oracle.springboot.service.UserService;
@@ -15,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.List;
 import java.util.UUID;
 
 /** 从github 获取个人信息
@@ -25,6 +26,7 @@ import java.util.UUID;
 public class AuthorizeController {
     @Autowired
     private GithubProvider githubProvider;
+
     @Value("${github.client.id}")
     private String clinentId;
 
@@ -58,20 +60,31 @@ public class AuthorizeController {
         String accessToken=githubProvider.getAccessToken(accessTokenPojo);
         GithubUser githubUser=githubProvider.getUser(accessToken);
         if(githubUser!=null){
+      try{
             User user=new User();
             String token=UUID.randomUUID().toString();
             user.setToken(token);
             user.setName(githubUser.getName());
             user.setDianzan(0);
             user.setLoginname(githubUser.getId());
+
+
+
+            user.setImage(githubUser.getAvatar_url());
+            System.out.println(user.getImage()+"999");
             userService.UserUpdateOrCreate(user);
+
             Cookie cookie = new Cookie("token", token);
             cookie.setMaxAge(60 * 60 * 24 * 30 * 6);
            /* List<User> userList= userService.getUserByLongName(githubUser.getId());
             request.getSession().setAttribute("user",userList.get(0));*/
             model.addAttribute("token",user.getToken());
             response.addCookie(cookie);
+
             return "redirect:/";
+            }catch(Exception e){
+                throw  new CustomizeException(CustomizeErrorCode.DOOMSDAY);
+            }
         }else {
             return "redirect:/";
         }

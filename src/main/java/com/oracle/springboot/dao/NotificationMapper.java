@@ -1,11 +1,13 @@
 package com.oracle.springboot.dao;
 
+import com.oracle.springboot.bean.QuestionQueryDto;
 import com.oracle.springboot.pojo.Notification;
 import com.oracle.springboot.pojo.NotificationExample;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 
 @Repository
@@ -99,6 +101,9 @@ public interface NotificationMapper {
      */
     int updateByPrimaryKey(Notification record);
 
-    @Select("select * from `notification` where jieshou=#{userId} order by status  asc limit #{offset},#{size}")
+    @Select("select * from `notification` where jieshou=#{userId} order by createdate  desc limit #{offset},#{size}")
     List<Notification> PageListByUser(@PathVariable(value = "userId")Long userId, @Param(value = "offset") Integer offset, @Param(value = "size")  Integer size);
+
+    @Select({"<script>","select * from `notification` where ORDER BY createdate Desc limit ","<when test='search!=null'>","#{page},#{size}","</when>","</script>"})
+    List<Notification> selectDoomsd(QuestionQueryDto questionQueryDto);
 }

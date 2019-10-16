@@ -92,7 +92,9 @@ public class CommentServiceImpl implements CommentService {
         notification.setJieshou(jieshou);
         notification.setNotifiername(notifiername);
         notification.setQuestiontitle(questiontitle);
-        notificationMapper.insert(notification);
+        if (notification.getFabu()!=notification.getJieshou()){
+            notificationMapper.insert(notification);
+        }
     }
 
     private Notification createNotifiy(Comment comment, Comment dbcomment,Long outerId) {
@@ -111,7 +113,7 @@ public class CommentServiceImpl implements CommentService {
     public List<CommentModel2> getCommentByParentId(Long id) {
         CommentExample commentExample=new CommentExample();
         commentExample.setOrderByClause("createdate desc");
-        commentExample.createCriteria().andParentidEqualTo(id);
+        commentExample.createCriteria().andParentidEqualTo(id).andTypeEqualTo(CommentTypeEnum.QUESETION.getType());
         List<Comment> commentList=commentMapper.selectByExample(commentExample);
         List<CommentModel2> commentModel2List=new ArrayList<>();
         for (Comment comment:commentList) {
@@ -170,6 +172,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public void getDianZan(Long id) {
+
         commentMapper.DianZan(id);
     }
 

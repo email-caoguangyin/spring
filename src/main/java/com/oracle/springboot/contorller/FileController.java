@@ -14,7 +14,7 @@ public class FileController {
 
         FileModel fileModel = new FileModel();
         fileModel.setSuccess(1);
-        fileModel.setUrl("/image/timg.jpg");
+        fileModel.setUrl("/avatar_url/timg.jpg");
 
         return fileModel;
 

@@ -98,10 +98,10 @@ public interface CommentMapper {
      */
     int updateByPrimaryKey(Comment record);
 
-    @Select("Select * from `comment` where id=#{parentid}")
+    @Select("Select * from `comment` where  id=#{parentid}")
     Comment getCommentByParentId(Long parentid);
 
-    @Select("Select count(1) from `comment` where parentId=#{id}")
+    @Select("Select count(1) from `comment` where type=2 and parentId=#{id}")
     Integer getCommentCount(Long id);
 
     @Update("update `comment` SET DIANZAN=DIANZAN+1 where id=#{id}")
